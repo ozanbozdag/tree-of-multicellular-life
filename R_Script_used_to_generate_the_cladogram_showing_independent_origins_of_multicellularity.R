@@ -1,6 +1,6 @@
 #Author: G Ozan Bozdag
 #Taxanomic validation:https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi
-#Evolutionary tree source data:https://tree.opentreeoflife.org 
+#Evolutionary tree source data (OTL):https://tree.opentreeoflife.org 
 
 # Load required libraries
 library(httr)
@@ -45,6 +45,14 @@ species <- c(
   # Pseudomonadati-Myxococcota Clade
   "Anaeromyxobacter dehalogenans",
   "Chondromyces crocatus",
+  
+  # Cyanobacteria Clade
+  "Anabaena sphaerica", # multicellular filamentous cyanobacterium with heterocysts
+  "Gloeobacter violaceus", # unicellular, deepest-branching cyanobacterium (lacks thylakoids)
+  # NOTE: OTL nests this pair with Chloroflexi, which is inaccurate.
+  # Manually reposition the Anabaena+Gloeobacter branch in the final PDF
+  # to come off the deep bacterial node as its own independent lineage,
+  # parallel to (not nested within) the other bacterial phyla shown.
   
   # Chlorophyta+Streptophyta+Rhodophyta (confirmed that the output of this part of 
   # the tree topology matches the manually generated tree
