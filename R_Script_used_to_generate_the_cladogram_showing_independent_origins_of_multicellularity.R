@@ -1,6 +1,33 @@
 #Author: G Ozan Bozdag
-#Taxanomic validation:https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi
-#Evolutionary tree source data (OTL):https://tree.opentreeoflife.org 
+#Taxanomic validation: https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi
+#Evolutionary tree source data: https://tree.opentreeoflife.org 
+#
+# REFERENCE NOTES FOR MANUAL TOPOLOGY CORRECTIONS
+#
+# The Open Tree of Life (OTL) induced subtree contains several topological 
+# inaccuracies that require manual correction in the final PDF. Corrections 
+# are based on the following published phylogenies:
+#
+#  - BACTERIA: Hug et al. 2016, "A new view of the tree of life", 
+#    Nature Microbiology, DOI: 10.1038/NMICROBIOL.2016.48
+#    Used for: Cyanobacteria placement, Chloroflexi/Firmicutes grouping, 
+#    separation of former "Deltaproteobacteria" (Myxococcota + Desulfobacterota) 
+#    from Proteobacteria s.s. (Alpha/Beta/Gamma). Note: Hug et al. show that 
+#    Proteobacteria is not monophyletic — Delta branches away from the others.
+#
+#  - HOLOZOA (Choanoflagellata, Filasterea, Ichthyosporea, Metazoa): 
+#    Ruiz-Trillo et al. 2023 used for overall holozoan topology.
+#    Brunet et al. 2019 used for choanoflagellate tip ordering 
+#    (Salpingoeca rosetta as outgroup to Monosiga + Choanoeca).
+#    Note: Choanoeca flexa not in OTL DB — used Choanoeca perplexa as 
+#    placeholder, rename in final PDF. Chromosphaera perkinsii not in OTL DB 
+#    — used Pirum gemmata as placeholder, rename in final PDF.
+#
+#  - GREEN ALGAE (Chlorophyta + Streptophyta + Rhodophyta): 
+#    Umen & Herron 2021 (Annu. Rev. Genet.) Fig. 1 used to confirm topology. 
+#    Note: OTL misplaces Tetrabaena socialis as an outgroup; used Gonium 
+#    multicoccum (correctly placed) as placeholder, rename in final PDF.
+# =============================================================================
 
 # Load required libraries
 library(httr)
@@ -47,12 +74,12 @@ species <- c(
   "Chondromyces crocatus",
   
   # Cyanobacteria Clade
+  # NOTE: OTL nests this pair with Chloroflexi, which is inaccurate.
+  # Per Hug et al. 2016, Cyanobacteria are a distinct phylum within 
+  # Terrabacteria, not sister to Chloroflexi. Manually reposition the 
+  # Anabaena+Gloeobacter branch in the final PDF (see MANUAL EDIT NOTES below).
   "Anabaena sphaerica", # multicellular filamentous cyanobacterium with heterocysts
   "Gloeobacter violaceus", # unicellular, deepest-branching cyanobacterium (lacks thylakoids)
-  # NOTE: OTL nests this pair with Chloroflexi, which is inaccurate.
-  # Manually reposition the Anabaena+Gloeobacter branch in the final PDF
-  # to come off the deep bacterial node as its own independent lineage,
-  # parallel to (not nested within) the other bacterial phyla shown.
   
   # Chlorophyta+Streptophyta+Rhodophyta (confirmed that the output of this part of 
   # the tree topology matches the manually generated tree
@@ -159,6 +186,63 @@ species <- c(
   "Acrasis rosea",
   "Naegleria gruberi"
 )
+
+# =============================================================================
+# MANUAL EDIT NOTES — BACTERIAL TOPOLOGY CORRECTIONS
+# =============================================================================
+# The OTL-induced subtree places several bacterial lineages incorrectly. 
+# After generating the PDF, manually reposition branches to match the 
+# rooted topology in Hug et al. 2016 (DOI: 10.1038/NMICROBIOL.2016.48, Fig. 2).
+#
+# Reference rooted topology:
+#
+# Bacteria
+# ├── Cyanobacteria
+# │   ├── Anabaena sphaerica
+# │   └── Gloeobacter violaceus
+# ├── Chloroflexi + Firmicutes cluster
+# │   ├── Chloroflexi
+# │   │   ├── Chloroflexus
+# │   │   └── Dehalococcoides mccartyi
+# │   └── Firmicutes
+# │       ├── Candidatus Arthromitus
+# │       └── Heliophilum fasciatum
+# ├── former "Deltaproteobacteria" cluster
+# │   ├── Myxococcota
+# │   │   ├── Anaeromyxobacter dehalogenans
+# │   │   └── Chondromyces crocatus
+# │   └── Desulfobacterota
+# │       ├── Magnetoglobus multicellularis + Algorimarina butyrica
+# │       └── Candidatus Electronema + Desulfovibrio vulgaris
+# └── Proteobacteria s.s.
+#     ├── Thioploca araucae (Gammaproteobacteria)
+#     └── Thiobacillus denitrificans (Betaproteobacteria)
+#
+# Specific corrections required:
+#  1. Group Chloroflexus + Dehalococcoides as sister pair (Chloroflexi clade).
+#  2. Group Arthromitus + Heliophilum as sister pair (Firmicutes), as sister 
+#     to Chloroflexi — OTL incorrectly nests Heliophilum/Arthromitus with 
+#     Dehalococcoides.
+#  3. Place Cyanobacteria (Anabaena + Gloeobacter) as its own branch BEFORE 
+#     (i.e., sister to) the Chloroflexi+Firmicutes cluster — NOT nested 
+#     within Chloroflexi as OTL places them. Per Hug et al. rooted tree, 
+#     Cyanobacteria/Melainabacteria branches separately from the 
+#     Firmicutes-Chloroflexi-Actinobacteria cluster.
+#  4. Pull Myxococcota (Anaeromyxobacter + Chondromyces) out from the 
+#     Proteobacteria clade and place with Desulfobacterota on the deep 
+#     former-"Deltaproteobacteria" branch.
+#  5. Keep former "Deltaproteobacteria" (Myxococcota + Desulfobacterota) 
+#     SEPARATE from Proteobacteria s.s. — in Hug et al.'s rooted tree these 
+#     are NOT sister groups. Delta clusters with Nitrospinae/Nitrospirae/
+#     Acidobacteria/NC10/Rokubacteria etc., while Alpha/Beta/Gamma/Zeta 
+#     form their own distinct cluster.
+#  6. Keep Thioploca + Thiobacillus together as Proteobacteria s.s. 
+#     (Gamma + Beta).
+#
+# Note: Hug et al. show Cyanobacteria + Melainabacteria as sister groups; 
+# Gloeobacter is retained here as the unicellular relative for consistency 
+# with the within-phylum sister-pair approach used elsewhere in this tree.
+# =============================================================================
 
 # Match names to OTT IDs
 cat("\nAttempting to match species names to OTT IDs...\n")
